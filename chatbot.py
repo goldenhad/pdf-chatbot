@@ -17,6 +17,8 @@ os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
 load_dotenv()
 
+
+
 def pdf_read(pdf_doc):
     text = ""
     for pdf in pdf_doc:
@@ -81,15 +83,15 @@ def main():
     user_question = st.text_input("Ask a Question from the Media Transcript Files")
     if user_question:
         user_input(user_question)
-    with st.sidebar:
-        pdf_doc = st.file_uploader("Upload your PDF Files and Click on the Submit & Process Button",
-                                   accept_multiple_files=True)
-        if st.button("Submit & Process"):
-            with st.spinner("Processing..."):
-                raw_text = pdf_read(pdf_doc)
-                text_chunks = get_chunks(raw_text)
-                vector_store(text_chunks)
-                st.success("Done")
+    # with st.sidebar:
+    #     pdf_doc = st.file_uploader("Upload your PDF Files and Click on the Submit & Process Button",
+    #                                accept_multiple_files=True)
+    #     if st.button("Submit & Process"):
+    #         with st.spinner("Processing..."):
+    #             raw_text = pdf_read(pdf_doc)
+    #             text_chunks = get_chunks(raw_text)
+    #             vector_store(text_chunks)
+    #             st.success("Done")
 
 
 if __name__ == "__main__":
