@@ -52,8 +52,8 @@ def get_conversational_chain(tools, ques):
             (
                 "system",
                 """You are a helpful assistant. Answer the question as detailed as possible from the provided 
-                context, The context is extracted from my videos, make sure to provide all the details, if the answer is not in provided context just not say, 
-                "answer is not available in the context", find the most relevant answer from the context, but don't provide the wrong answer""",
+                context, The context is extracted from my videos, make sure to provide all the details, if the answer is not in provided context just say, 
+                "The answer is not mentioned in the material videos you offered", but in any cases don't provide the wrong answer""",
             ),
             ("placeholder", "{chat_history}"),
             ("human", "{input}"),
