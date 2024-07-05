@@ -17,8 +17,6 @@ os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
 load_dotenv()
 
-
-
 def pdf_read(pdf_doc):
     text = ""
     for pdf in pdf_doc:
@@ -29,13 +27,14 @@ def pdf_read(pdf_doc):
 
 
 def get_chunks(text):
-    text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
+    text_splitter = RecursiveCharacterTextSplitter(chunk_size=10000, chunk_overlap=200)
     chunks = text_splitter.split_text(text)
     return chunks
 
 
-embeddings = SpacyEmbeddings(model_name="fr_core_news_lg")
-
+# embeddings = SpacyEmbeddings(model_name="fr_core_news_lg")
+embeddings = OpenAIEmbeddings(model="text-embedding-ada-002")
+#
 
 def vector_store(text_chunks):
     vector_store = FAISS.from_texts(text_chunks, embedding=embeddings)
@@ -43,17 +42,17 @@ def vector_store(text_chunks):
 
 
 def get_conversational_chain(tools, ques):
-    openai_api_key  = os.environ["ANTHROPIC_API_KEY"]
+    openai_api_key = os.environ["OPENAI_API_KEY"]
     # llm = ChatAnthropic(
     # model="claude-3-sonnet-20240229", temperature=0, api_key=os.getenv("ANTHROPIC_API_KEY"),verbose=True)
-    llm = ChatOpenAI(model_name="gpt-3.5-turbo", temperature=0, api_key=openai_api_key )
+    llm = ChatOpenAI(model_name="gpt-4", temperature=0, api_key=openai_api_key )
     prompt = ChatPromptTemplate.from_messages(
         [
             (
                 "system",
-                """You are a helpful assistant. Answer the question as detailed as possible from the provided 
-                context, The context is extracted from my videos, make sure to provide all the details only in the context, if the answer is not in provided context just say, 
-                "The answer is not mentioned in the material videos you offered", but in any cases don't provide the wrong answer""",
+                """You are a Trading Instructor assistant. The context is about Trading. Answer the question as detailed as possible from the provided 
+                context, The context was extracted from my video by human, make sure to provide all the detail answers to the question in the context, 
+                if the answer is not in provided context, please provide the most relevant answer in the context with some statement, but in any cases don't provide the wrong answer""",
             ),
             ("placeholder", "{chat_history}"),
             ("human", "{input}"),
@@ -83,17 +82,17 @@ def main():
     user_question = st.text_input("Ask a Question from the Media Transcript Files")
     if user_question:
         user_input(user_question)
-    # with st.sidebar:
-    #     pdf_doc = st.file_uploader("Upload your PDF Files and Click on the Submit & Process Button",
-    #                                accept_multiple_files=True)
-    #     if st.button("Submit & Process"):
-    #         with st.spinner("Processing..."):
-    #             raw_text = pdf_read(pdf_doc)
-    #             text_chunks = get_chunks(raw_text)
-    #             vector_store(text_chunks)
-    #             st.success("Done")
+    with st.sidebar:
+        pdf_doc = st.file_uploader("Upload your PDF Files and Click on the Submit & Process Button",
+                                   accept_multiple_files=True)
+        if st.button("Submit & Process"):
+            with st.spinner("Processing..."):
+                raw_text = pdf_read(pdf_doc)
+                text_chunks = get_chunks(raw_text)
+                vector_store(text_chunks)
+                # vector_store(raw_text)
+                st.success("Done")
 
 
 if __name__ == "__main__":
-
     main()
