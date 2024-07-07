@@ -66,6 +66,12 @@ def get_conversational_chain(tools, ques):
     response = agent_executor.invoke({"input": ques})
     print(response)
     st.write("Reply: ", response['output'])
+    # col1, col2, col3 = st.columns([1, 1, 8])
+    # if col1.button("👍", key=f"up"):
+    #     print('upvoted',response)
+    # #     st.session_state.votes[i]["upvotes"] += 1
+    # if col2.button("👎", key=f"down"):
+    #     print('downvoted', response)
 
 
 def user_input(user_question):

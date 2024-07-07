@@ -89,38 +89,38 @@ def user_input(user_question, chat_history, user_feedback=None):
     retriever = new_db.as_retriever()
     retrieval_chain = create_retriever_tool(retriever, "pdf_extractor",
                                             "This tool is to give answer to queries from the pdf")
-    # response = get_conversational_chain(retrieval_chain, user_question, chat_history)
+    response = get_conversational_chain(retrieval_chain, user_question, chat_history)
 
     # Get the top k responses
-    results = retriever.retrieve(user_question, k=10)
+    # results = retriever.retrieve(user_question, k=10)
 
     # Important : Voting Algorithm
     # Adjust the results based on voting history
-    results_with_scores = []
-    for result in results:
-        for qa in qas:
-            if qa.question == result["text"]:
-                score = result["score"]
-                score += (qa.yes_votes - qa.no_votes)  # Adjust score based on votes
-                results_with_scores.append((result, score))
-                break
+    # results_with_scores = []
+    # for result in results:
+    #     for qa in qas:
+    #         if qa.question == result["text"]:
+    #             score = result["score"]
+    #             score += (qa.yes_votes - qa.no_votes)  # Adjust score based on votes
+    #             results_with_scores.append((result, score))
+    #             break
 
     # Sort by adjusted score
-    results_with_scores.sort(key=lambda x: x[1], reverse=True)
-    best_result = results_with_scores[0][0]
+    # results_with_scores.sort(key=lambda x: x[1], reverse=True)
+    # best_result = results_with_scores[0][0]
 
     # Find the corresponding QA entry and update voting history if needed
-    for qa in qas:
-        if qa.question == best_result["text"]:
-            if user_feedback == "yes":
-                qa.yes_votes += 1
-            elif user_feedback == "no":
-                qa.no_votes += 1
-            break
-    # Save the updated data
-    with open("faiss_db_eng_metadata.json", "w") as f:
-        json.dump([qa.to_dict() for qa in qas], f)
-    response = {"question": best_result["text"], "answer": best_result["metadata"]["answer"]}
+    # for qa in qas:
+    #     if qa.question == best_result["text"]:
+    #         if user_feedback == "yes":
+    #             qa.yes_votes += 1
+    #         elif user_feedback == "no":
+    #             qa.no_votes += 1
+    #         break
+    # # Save the updated data
+    # with open("faiss_db_eng_metadata.json", "w") as f:
+    #     json.dump([qa.to_dict() for qa in qas], f)
+    # response = {"question": best_result["text"], "answer": best_result["metadata"]["answer"]}
 
     return response
 
@@ -159,23 +159,27 @@ def main():
                 {"role": "assistant", "content": response})
             st.session_state.votes.append({"upvotes": 0, "downvotes": 0})  # Ensure votes are appended for each response
 
-    if st.session_state.chat_history:
-        for i, chat in enumerate(st.session_state.chat_history):
-            print('-------------------------------->')
-            print(i, chat)
-            print(st.session_state)
 
-            if chat['role'] == 'human':
-                st.write(f"**You:** {chat['content']}")
-            elif chat['role'] == 'assistant':
-                st.write(f"**ChatBot:** {chat['content']}")
 
-                col1, col2, col3 = st.columns([1, 1, 8])
-                if col1.button("👍", key=f"up_{i}"):
-                #     st.session_state.votes[i]["upvotes"] += 1
-                #     st.session_state.votes.append({"upvotes": 0, "downvotes": 0})
-                if col2.button("👎", key=f"down_{i}"):
-                #     st.session_state.votes[i]["downvotes"] += 1
+
+    # if st.session_state.chat_history:
+    #     for i, chat in enumerate(st.session_state.chat_history):
+    #         print('-------------------------------->')
+    #         print(i, chat)
+    #         print(st.session_state)
+    #
+    #         if chat['role'] == 'human':
+    #             st.write(f"**You:** {chat['content']}")
+    #         elif chat['role'] == 'assistant':
+    #             st.write(f"**ChatBot:** {chat['content']}")
+    #
+    #             col1, col2, col3 = st.columns([1, 1, 8])
+    #             if col1.button("👍", key=f"up_{i}"):
+    #                 print('upvoted',chat)
+    #             #     st.session_state.votes[i]["upvotes"] += 1
+    #             if col2.button("👎", key=f"down_{i}"):
+    #                 print('downvoted', chat)
+    #             #     st.session_state.votes[i]["downvotes"] += 1
 
             print(st.session_state)
                 # col3.write(
